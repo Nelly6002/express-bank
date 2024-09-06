@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <title>card</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Open Sans', sans-serif;
+            background-color: rgb(247, 247, 247);
+            display: flex;
+            height: 100vh;
+            color: #4f5b62;
+        }
+
+        .side {
+            width: 280px;
+            height: 100%;
+            background-color: rgb(247, 247, 247);
+            color: #3a3a3a;
+        }
+
+        .geust {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .geust img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+
+        .geust p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .box {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .drop {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .material-symbols-outlined {
+            vertical-align: middle;
+        }
+
+        .list {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 10px;
+            width: 160px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 10;
+        }
+
+        .box:hover .list {
+            display: block;
+        }
+
+        .list li {
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #3a3a3a;
+            display: flex;
+            align-items: center;
+        }
+
+        .list li:hover {
+            background-color: #d6d6d675;
+            transition: 1s;
+            border-radius: 10px;
+        }
+
+        .item {
+            padding: 20px;
+            color: #2c2c2ca8;
+        }
+
+        .item p {
+            margin-left: 10px;
+            line-height: 35px;
+            cursor: pointer;
+        }
+
+        .item span {
+            padding-right: 5px;
+        }
+
+        .select {
+            color: red;
+            background-color: #ffff;
+            padding: 8px;
+            width: 200px;
+            border-radius: 10px;
+        }
+
+        .select:hover {
+            background-color: #d6d6d675;
+        }
+
+        .notselect:hover {
+            background-color: #d6d6d675;
+            padding: 8px;
+            width: 200px;
+            border-radius: 10px;
+        }
+
+    
+            .main {
+    flex: 1;
+    overflow: scroll; /* Ensure overflow scrolling */
+    background-color: #f9f9f9;
+    padding: 20px; /* Add padding if necessary */
+    
+}
+
+        
+
+        .intro {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Translucent Background for Popup */
+        .popup-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background */
+            z-index: 9;
+            /* Slightly lower than popup */
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            /* Higher than the translucent background */
+            width: fit-content;
+            padding: 20px;
+        }
+
+
+        .popup-content {
+            text-align: center;
+        }
+
+        #closePopup {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #closePopup:hover {
+            background-color: #0056b3;
+        }
+section{
+    position: relative;
+    min-height: 25vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+
+}
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 400px; /* Limits the maximum width of the card */
+    height: auto; /* Adjust height automatically based on width */
+    perspective: 1000px;
+    margin: 20px auto; /* Centers the card and adds spacing */
+    margin-top: 50px; /* Adjust this value to move the card up */
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+      .container:hover {
+    transform: rotateY(180deg); /* 180-degree rotation on Y-axis */
+}
+.container .card.front,
+.container .card.back-face {
+    position: absolute;
+    width: 100%;
+    color: #1b1a1a;
+    height: 250px; /* Set a specific height */
+    padding: 25px;
+    border-radius: 25px;
+    backface-visibility: hidden;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 25px 25px black;
+}
+.container .card.front {
+    background-image: url(.//pics/card\ bg.jfif);
+}
+
+.container .card.back-face {
+    background-image: url(.//pics/card\ bg.jfif);
+    transform: rotateY(180deg);
+}
+
+        header,
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        header {
+            justify-content: space-between;
+        }
+
+        .front .logo img {
+            width: 45px;
+        }
+
+        #mas {
+            color: black;
+        }
+
+        .chip {
+            width: 50px;
+        }
+
+        .card-details {
+            display: flex;
+            align-items: flex-end;
+            margin-top: 40px;
+            justify-content: space-between;
+        }
+
+        h6 {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        h5.number {
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        h5.name {
+            margin-top: 40px;
+        }
+
+        .v {
+            color:#1b1a1a;
+            font-weight: bold;
+        }
+        .back-face {
+    transform: rotateY(180deg);
+    border: none;
+    padding: 15px 25px 25px 250px;
+    backface-visibility: hidden;
+    background-image: url(card\ bg.jfif); /* Add a background image */
+    background-size: cover; /* Adjust image size */
+    background-position: center; /* Center the background */
+}
+        .back-face h6{
+            font-size: 10px;
+            color: #1b1a1a;
+        }
+        .strip{
+            margin-top: 10px;
+            position: absolute;
+            top: 45;
+            left: 0;
+            height: 45px;
+            width: 100%;
+            background-color: rgb(34,34,33);
+            opacity: 0.95;
+        }
+        .sign{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 80px;
+            height: 40px;
+            width: 85%;
+            border-radius: 6px;
+            background:repeating-linear-gradient(#757272,#cfcbcb 3px,#b4b2b2 0px,#1b1a1a 9px);
+        }
+        i{
+            color: #1b1a1a;
+            font-size: 15px;
+            padding: 5px 6px;
+            border-radius: 4px;
+            background-color: white;
+            margin-right: -30px;
+        }
+        .back-face h5{
+            font-size: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .add{
+            margin-top: 20px;
+            display: flex;
+           font-weight: bolder;
+        }
+
+    .info {
+    background-color: #fff;
+    width: 700px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin-top: 250px; /* Ensure there is space above the info section */
+}
+.space img {
+      width: 25px;
+      height: 25px;
+    }
+    .circle{
+      border-radius: 100%;
+      padding: 5px;
+    }
+.option {
+      justify-content: center;
+     padding: 5px;
+    }
+    .option h4 {
+      font-size: rem;
+      margin-left: 15px;
+    }
+
+    .space {
+      display: flex;
+     
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      font-size: 1rem;
+    }
+        @media (max-width: 768px) {
+            .container {
+        width: 90%; /* Adjust width to fit better on small screens */
+        height: 250px; /* Set a fixed height for mobile */
+    }
+    
+    .container .card.front,
+    .container .card.back-face {
+        height: 250px; /* Maintain the fixed height for both sides */
+        padding: 15px; /* Reduce padding for smaller screens */
+    }
+    .option{
+  width: 100%;
+}
+    .info{
+        margin-top: 50px;
+    }
+            .side {
+                position: fixed;
+                top: 0;
+                left: -280px;
+                width: 280px;
+                height: 100%;
+                transition: transform 1s ease-in-out;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+                z-index: 4;
+            }
+
+            .side.active {
+                transform: translateX(280px);
+            }
+
+            .hamburger-icon {
+                display: block;
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 5;
+                cursor: pointer;
+                font-size: 2rem;
+                color: #2c2c2c;
+            }
+
+            .close-icon {
+                display: none;
+            }
+
+        }
+
+
+        @media (min-width: 769px) {
+            .hamburger-icon {
+                display: none;
+            }
+           
+        }
+
+        /* Translucent Background */
+        .translucent-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 3;
+        }
+
+        .translucent-background.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="side" id="sidebar">
+        <div class="profile">
+            <div class="geust">
+                <div class="intro">
+                    <img id="avatar" src="guest-icon-png-29.jpg" alt="guest avatar">
+                    <p id="username"></p>
+                </div>
+                <div class="box">
+                    <span class="drop">
+                        <span>personal<span class="material-symbols-outlined">
+                                expand_more
+                            </span></span>
+                    </span>
+                    <div class="list">
+                        <ul>
+                            <li onclick="profile()"><span class="material-symbols-outlined">
+                                    account_box
+                                </span>Profile</li>
+                            <li> <span class="material-symbols-outlined">
+                                    notifications
+                                </span>Notifications</li>
+                            <li><span onclick="edit()" class="material-symbols-outlined">
+                                    settings
+                                </span>settings</li>
+                            <li> <span class="material-symbols-outlined">
+                                    more_horiz
+                                </span>More</li>
+                            <li onclick="logout()"><span style="color: red;" class="material-symbols-outlined">
+                                    logout
+                                </span><span style="color: red;"> Log out</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div onclick="home()" class="notselect">
+                <p class="p"><span class="material-symbols-outlined">
+                        payments
+                    </span>Home</p>
+            </div>
+            <div onclick="card()" class="select">
+                <p><span class="material-symbols-outlined">
+                        credit_card
+                    </span>Card</p>
+            </div>
+            <div onclick="savings()" class="notselect">
+                <p><span class="material-symbols-outlined">
+                        savings
+                    </span>Savings</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translucent background for closing the sidebar -->
+    <div id="translucentBackground" class="translucent-background"></div>
+
+    <!-- Hamburger icon for mobile view -->
+    <div id="hamburgerIcon" class="hamburger-icon">
+        <span id="hamburgerIconSymbol" class="material-symbols-outlined">menu</span>
+        <span id="closeIconSymbol" class="material-symbols-outlined close-icon">close</span>
+    </div>
+
+    <div class="main">
+        <!-- Translucent background for popup -->
+        <div id="popupBackground" class="popup-background"></div>
+
+        <!-- Popup for first-time visit -->
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <img src="images-removebg-preview.png" alt="">
+                <h2>Get to generate your personal express virtual card.</h2>
+                <p>Say goodbye to the hassle of carrying physical cards and enjoy secure and convenient payments
+                    anytime, anywhere with SwiftPay's personalized virtual card. Easily generate your unique card
+                    details and use it for online purchases, subscriptions, and recurring payments with just a few
+                    clicks. Explore the features using the sidebar.</p>
+                <button id="closePopup">Get started!</button>
+            </div>
+        </div>
+        <h1 style="padding: 20px 50px;">card</h1>
+        <p>Physical & virtual card</p>
+        <section>
+            <div class="container">
+                <div class="card front">
+                    <header>
+                        <div class="logo">
+                            <img src="logo-removebg-preview.png" alt="">
+                        </div>
+                        <div class="logo">
+                            <img src="master-removebg-preview.png" alt="">
+                            <h4 id="mas">Master Card</h4>
+                        </div>
+                        <img src="card_chip-512.png" alt="" class="chip">
+                    </header>
+                    <div class="card-details">
+                        <div class="name-number">
+                            <h6>card number</h6>
+                            <h5 id="number" class="number"></h5>
+                            <h5 id="name" class="name"></h5>
+
+                        </div>
+                        <div class="validate">
+                            <h6 class="v">valid thru</h6>
+                            <h6 class="v">04/09/29</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="card back-face">
+                    <h6>for customer service call +91909898500</h6>
+                    <span class="strip"></span>
+                    <div class="sign"><i>526</i></div>
+                    <div class="add">
+                        <div>
+                            <h6 style="color:black;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non dolorem minus autem aliquid iusto facere repellendus, unde ratione soluta dolor deserunt laborum numquam ullam? Nostrum molestiae omnis error maxime tempora!</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="info">
+            <div class="option">
+                <div class="topoption">
+                  <div onclick="transfer()" class="space">
+                   <div style="background-color: #d6d6d675;" class="circle">
+                    <span class="material-symbols-outlined">
+                        verified_user
+                        </span>
+                   </div>
+                    <h4>secured</h4>
+                  </div>
+                  
+                  <div onclick="airtime()" class="space"><div style="background-color:#d6d6d675" class="circle"><span class="material-symbols-outlined">
+                    bolt
+                    </span></div>
+                    <h4>Instant Access</h4>
+                  </div>
+                  <div class="space">
+                    <div style="background-color:#d6d6d675" class="circle"><span class="material-symbols-outlined">
+                        credit_card
+                        </span></div>
+                    
+                    <h4>Online Merchant Acceptance</h4>
+                  </div>
+                  
+                </div>
+              </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            const userDocRef = db.collection("users").doc(user.uid);
+
+            userDocRef.get().then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    document.getElementById("avatar").src = userData.avatarURL || "guest-icon-png-29.jpg";
+                    document.getElementById("username").innerText = "Welcome, " + userData.username + "!";
+
+                    // Update card details
+                    document.getElementById("number").innerText = userData.bankAccountNumber || "XXXX-XXXX-XXXX-XXXX";
+                    document.getElementById("name").innerText = `${userData.firstname || "First Name"} ${userData.lastname || "Last Name"}`;
+                }
+            }).catch((error) => {
+                console.error("Error getting document:", error);
+            });
+        } else {
+            window.location.href = "index.html"; // Redirect to login page if not authenticated
+        }
+    });
+        function edit() {
+            window.location.href = "edit.html";
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("sidebar");
+            const translucentBackground = document.getElementById("translucentBackground");
+            const hamburgerIcon = document.getElementById("hamburgerIcon");
+            const closeIconSymbol = document.getElementById("closeIconSymbol");
+            const hamburgerIconSymbol = document.getElementById("hamburgerIconSymbol");
+           
+
+            // First-time visit popup logic
+            const popup = document.getElementById("popup");
+            const closePopup = document.getElementById("closePopup");
+            const popupBackground = document.getElementById("popupBackground");
+            // Check if the user has already seen the popup
+            
+            if (!localStorage.getItem("hasVisited")) {
+                // Show the popup and translucent background
+                popup.style.display = "block";
+                popupBackground.style.display = "block";
+
+                // When the "Got it!" button is clicked, close the popup and set the localStorage flag
+                closePopup.addEventListener("click", function () {
+                    popup.style.display = "none";
+                    popupBackground.style.display = "none";
+                    localStorage.setItem("hasVisited", "true");
+                });
+            }
+        });
+        
+        // Hamburger menu logic
+        hamburgerIcon.addEventListener("click", function () {
+            if (sidebar.classList.contains("active")) {
+                sidebar.classList.remove("active");
+                translucentBackground.classList.remove("show");
+                closeIconSymbol.style.display = "none";
+                hamburgerIconSymbol.style.display = "inline";
+            } else {
+                sidebar.classList.add("active");
+                translucentBackground.classList.add("show");
+                closeIconSymbol.style.display = "inline";
+                hamburgerIconSymbol.style.display = "none";
+            }
+        });
+
+        translucentBackground.addEventListener("click", function () {
+            sidebar.classList.remove("active");
+            translucentBackground.classList.remove("show");
+            closeIconSymbol.style.display = "none";
+            hamburgerIconSymbol.style.display = "inline";
+        });
+
+
+        function home() {
+            window.location.href = "dashboard.html";
+        }
+        function card() {
+            window.location.href = "card.html"
+        }
+        function savings() {
+            window.location.href = "savings.html"
+        }
+        function profile(){
+  window.location.href = "profile.html";
+}
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "login1.html";
+            }).catch((error) => {
+                console.error("Error signing out:", error);
+            });
+        }
+        
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Express</title>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap" rel="stylesheet">
+    <link rel="icon" type="x-icon" href="logo-removebg-preview.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .sec1 {
+        background-image: url(https___assets.revolut.com_published-assets-v3_d90b21c6-4731-4ea4-b3f0-16581c13e5c2_d9e1dc43-652b-47b7-a8da-77f8c22b0c68.png);
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        width: 100%;
+    }
+
+    body {
+        color: #f4f4f4;
+    }
+
+    nav {
+        z-index: 1;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        justify-content: space-between;
+
+    }
+
+
+    .logo img {
+        width: 80px;
+        height: 80px;
+
+    }
+
+    .logo {
+        margin-left: 100px;
+        display: flex;
+    }
+
+    .join,
+    .list {
+        display: flex;
+        align-items: center;
+    }
+
+    .list {
+        margin-left: 20px;
+    }
+
+    .list a {
+        padding-right: 50px;
+        text-decoration: none;
+        color: white;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 400;
+        cursor: pointer;
+    }
+
+    .listimg a:hover {
+        color: black;
+        cursor: pointer;
+    }
+
+    .btn {
+        margin-right: 100px;
+    }
+
+    .btn1,
+    .btn2 {
+        align-items: center;
+        text-align: center;
+        width: fit-content;
+        padding: 15px;
+        height: fit-content;
+        border: none;
+        background-color: transparent;
+        border-radius: 50px;
+        color: white;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .title h1 {
+        font-size: 100px;
+        text-align: left;
+        margin-left: 50px;
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        font-style: normal;
+
+
+
+    }
+
+
+    .p {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+       width: 450px;
+    }
+
+    .but {
+        width: fit-content;
+        height: fit-content;
+    }
+
+    .but button {
+        width: fit-content;
+        height: fit-content;
+        padding: 15px;
+        background-color: #191c1f;
+        color: white;
+        font-size: larger;
+        font-weight: 600;
+        font-style: normal;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        border-radius: 50px;
+        border: none;
+        margin-top: 20px;
+        margin-left: 50px;
+
+    }
+
+    .but button:hover {
+        background-color: #191c1fc2;
+        cursor: pointer;
+    }
+
+    .btn2 {
+        background-color: #f4f4f4;
+        color: black;
+    }
+
+    .btn1:hover {
+        background-color: black;
+    }
+
+    .btn2:hover {
+        background-color: #f4f4f4b2;
+    }
+
+
+    .sec2,
+    .sec3,
+    .sec4 {
+        height: 800px;
+        width: 100%;
+    }
+
+    .minisub {
+        margin-top: 5%;
+        width: 500px;
+        margin-left: 10%;
+    }
+
+    .minisub h2 {
+        color: #191c1f;
+        font-size: 51.95px;
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        font-style: normal;
+        text-transform: uppercase;
+    }
+
+    .minisub span {
+        color: #191c1f;
+        font-size: 18px;
+        font-weight: 700;
+        font-family: "Roboto", sans-serif;
+    }
+
+    .but1 {
+        width: fit-content;
+        height: fit-content;
+        padding: 15px;
+        background-color: #191c1f;
+        color: white;
+        font-size: larger;
+        font-weight: 600;
+        font-style: normal;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        border-radius: 50px;
+        border: none;
+        margin-top: 10px;
+
+    }
+
+    .but1:hover {
+        background-color: #191c1fc2;
+        cursor: pointer;
+    }
+
+    .midsub {
+        display: flex;
+    }
+
+    .midsub img {
+        width: 600px;
+        height: 300px;
+        margin-top: 5%;
+        margin-left: 5%;
+        border-radius: 10px;
+    }
+
+    .sec3 {
+        background-color: black;
+
+    }
+
+    .head {
+        text-align: center;
+        align-items: center;
+    }
+
+    .head h2 {
+
+        font-size: 51.95px;
+        margin-top: 5%;
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        font-style: normal;
+        color: #f4f4f4;
+        text-transform: uppercase;
+    }
+
+    .head p {
+        font-size: 18px;
+        font-weight: 700;
+        font-family: "Roboto", sans-serif;
+        width: 60%;
+        margin-left: 20%;
+        color: #f4f4f4;
+    }
+
+    .card {
+        background-image: linear-gradient(60deg, black 5%, grey 65%, white 95%);
+        width: 430px;
+        height: 230px;
+        margin-left: 35%;
+        margin-top: 5%;
+        border-radius: 10px;
+        border: solid #f4f4f4 1px;
+    }
+
+
+    .card img {
+        margin-top: 3%;
+        margin-left: 8%;
+        width: 60px;
+        height: 60px;
+        display: block;
+    }
+
+    .top {
+        display: flex;
+    }
+
+    .top span {
+        color: #f4f4f4;
+        margin-top: 10%;
+        margin-left: 10%;
+        font-size: 20px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .save h2 {
+        color: #191c1f;
+        font-size: 51.95px;
+        margin-top: 5%;
+        text-align: center;
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        font-style: normal;
+        text-transform: uppercase;
+    }
+
+    .save p {
+        font-size: 18px;
+        font-weight: 700;
+        font-family: "Roboto", sans-serif;
+        width: 55%;
+        text-align: center;
+        margin-left: 22%;
+        color: #191c1f;
+    }
+
+    .rate h1 {
+        color: #191c1f;
+        font-family: "Roboto", sans-serif;
+        font-size: 300px;
+        text-align: center;
+        font-weight: 900;
+        font-style: normal;
+        text-transform: uppercase;
+    }
+
+    .rate button {
+        margin-left: 46%;
+        width: fit-content;
+        height: fit-content;
+        padding: 15px;
+        background-color: #191c1f;
+        color: white;
+        font-size: larger;
+        font-weight: 600;
+        font-style: normal;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        border-radius: 50px;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .sec5 {
+        height: 70vh;
+        background-color: #191c1f;
+    }
+
+    .airtime h2 {
+        color: #f4f4f4;
+        font-size: 51.95px;
+        margin-top: 10%;
+        text-align: center;
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        margin-left: 20%;
+        width: 80%;
+        font-style: normal;
+        text-transform: uppercase;
+    }
+
+    .airtime p {
+        font-size: 18px;
+        font-weight: 700;
+        font-family: "Roboto", sans-serif;
+        margin-left: 30%;
+        width: 80%;
+        color: #f4f4f4;
+    }
+
+    .airpic img {
+        width: 50%;
+        height: 60%;
+        border-radius: 10px;
+        margin-top: 5%;
+        margin-left: 30%;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .secure h2 {
+        color: #191c1f;
+        font-size: 51.95px;
+        margin-top: 5%;
+        text-align: center;
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        text-align: center;
+        font-style: normal;
+        text-transform: uppercase;
+    }
+
+    .secure p {
+        font-size: 18px;
+        font-weight: 700;
+        font-family: "Roboto", sans-serif;
+        margin-left: 28%;
+        width: 50%;
+        color: #191c1f;
+    }
+
+    .securepic img {
+        margin-left: 30%;
+    }
+
+    .end {
+        height: 120vh;
+        background-color: #191c1f;
+    }
+
+    .end h4 {
+        color: #8D969E;
+        margin-left: 10%;
+        font-size: 30px;
+        font-weight: 500;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .end h2 {
+        margin-left: 10%;
+        font-size: 40px;
+        font-weight: 500;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .end img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .end p {
+        width: 120%;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .down {
+        width: 50%;
+        height: 100vh;
+        left: -100%;
+        top: 0;
+        z-index: 99;
+        position: fixed;
+        background-color: rgb(255, 255, 255);
+        opacity: 1;
+    }
+
+    .down a {
+        display: block;
+        text-decoration: none;
+        color: black;
+        padding: 20px 0px 0px 40px;
+    }
+
+    .drop:focus-within .down {
+        left: 0;
+        right: 0;
+        position: fixed;
+    }
+
+    .menu {
+        display: none;
+    }
+
+    .down img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .drop {
+        font-weight: 500;
+        border: none;
+        background-color: transparent;
+        font-size: xx-large;
+
+    }
+
+    .footer {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+        color: #8D969E;
+        list-style-type: none;
+        flex-wrap: wrap;
+        width: 150px;
+        height: fit-content;
+        justify-content: start;
+        margin-left: 150px;
+        margin-top: 30px;
+    }
+
+    .footer li a {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+        color: #8D969E;
+        text-decoration: none;
+
+    }
+
+    .footer a:hover {
+        color: #f4f4f4;
+    }
+
+    .footer h3 {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        color: white;
+    }
+
+    .secg {
+        display: flex;
+        height: 400px;
+        flex-wrap: wrap;
+    }
+    .btn{
+        display: flex;
+    }
+
+    @media (max-width:700px) {
+
+        .title h1 {
+            font-size: 60px;
+        }
+
+        .rate h1 {
+            font-size: 150px;
+        }
+        .sec3{
+            height: 1000px;
+        }
+        .sec2{
+            height: 1000px;
+        }
+        .card{
+            width: 350px;
+        }
+        .minisub h2{
+            width: 90%;
+        }
+        .midsub img{
+            width: 90%;
+        }
+        .minisub{
+            width: 80%;
+        }
+        .securepic img{
+           width: 80%;
+        }
+        .p{
+            width: 100%;
+        }
+    }
+
+    @media (max-width:900px) {
+        .menu {
+
+            display: block;
+        }
+
+        .list {
+            display: none;
+        }
+
+        .join {
+            display: none;
+        }
+
+        .flex {
+            display: block;
+        }
+
+        .securepic img {
+            margin-left: 50px;
+        }
+
+        .airtime h2 {
+            margin-left: 50px;
+        }
+
+        .airtime p {
+            margin-left: 50px;
+        }
+
+        .sec5 {
+            height: 800px;
+        }
+
+        .menu:focus-within .down {
+            left: 0;
+            right: 0;
+            position: fixed;
+            transition: 2s ease-in-out;
+        }
+
+        nav {
+            justify-content: space-around;
+            box-sizing: border-box;
+            padding: 0px 10px 0px 10px;
+            align-items: center;
+
+        }
+
+        .logo {
+            margin-left: 0px;
+        }
+
+        .midsub {
+            display: block;
+        }
+
+        .sec3 {
+            margin-top: 60%;
+        }
+
+        .card {
+            margin-left: 10%;
+        }
+
+    }
+
+    @media (max-width:1100px) {
+      
+
+        .end {
+            height: 1150px;
+        }
+    }
+</style>
+
+<body onscroll="color()">
+    <section class="sec1">
+        <nav id="opaq">
+            <div class="logo">
+                <img src="logo_full-removebg-preview (1).png " alt="">
+                <div class="list">
+                    <div class="listimg"> <a href="">Personal</a></div>
+                    <div class="listimg"><a href="">Business</a></div>
+                    <div class="listimg"><a href="">Express<18</a>
+                    </div>
+                    <div class="listimg"><a href="">Company</a></div>
+                </div>
+            </div>
+            <div class="join">
+                <div class="btn">
+                    <button class="btn1" type="button">Log in</button>
+                    <a href=""> <button class="btn2" type="button">Sign up</button></a>
+                </div>
+            </div>
+            <div class="menu">
+                <button class="drop"><span class="material-symbols-outlined">
+                    menu
+                    </span></button>
+                <div class="down">
+                    <img src="logo_full-removebg-preview (1).png" alt="">
+                    <div class="list1">
+                        <div class="listimg"> <a href="">Personal</a></div>
+                        <div class="listimg"><a href="">Business</a></div>
+                        <div class="listimg"><a href="">Express<18</a>
+                        </div>
+                        <div class="listimg"><a href="">Company</a></div>
+                        <div class="join1">
+                            <div class="btn">
+                                <button class="but1" type="button">Log in</button>
+                                <a href=""> <button class="btn2" type="button">Sign up</button></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </nav>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="title">
+            <div class="sub">
+                <h1>Take your money on a whole new level<p class="p">For those who want more from their money — there’s
+                        Express. Sign up for free, in a tap.</p>
+                </h1>
+                <div class="but"> <button onclick="log()">Get the app</button></div>
+            </div>
+
+
+
+        </div>
+
+        </div>
+
+    </section>
+    <section class="sec2">
+        <div class="midsub">
+            <div class="minisub">
+                <h2>Easy Account Opening</h2>
+                <span>Instant account opening with amazing welcome bonuses</span>
+                <br>
+                <button class="but1">Get started</button>
+            </div>
+            <img src="sign up.jpg" alt="">
+        </div>
+        <div class="midsub">
+            <img style="margin-top: 5%; margin-left: 5%;border-radius: 10px;"
+                src="transfer.png" alt="">
+            <div class="minisub">
+                <h2>Instant transfer</h2>
+                <span>Instant transfer with 101% successful rate to banks anytime anywhere </span>
+                <br>
+                <button class="but1">Try it out</button>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="sec3">
+        <br>
+        <br>
+        <div class="head">
+            <h2>Check the Express virtual card</h2>
+            <br>
+            <p>Say goodbye to the hassle of carrying physical cards and enjoy secure and convenient payments anytime,
+                anywhere with Express's personalized virtual card.</p>
+            <br>
+            <br>
+            <button class="btn2">Get virtual card now</button>
+        </div>
+        <div class="card">
+            <div class="top">
+                <span>debit</span>
+                <img src="logo-removebg-preview.png" alt="" style="margin-left: 60%;">
+            </div>
+            <img class="chip" src="card_chip-5122.png" alt="">
+        </div>
+    </section>
+    <section class="sec4">
+        <div class="save">
+            <h2>Are your savings interest-ing?</h2>
+            <p>Let your money make more money with up to 10% interest rate (variable) interest on savings. Paid every
+                single day.</p>
+        </div>
+        <div class="rate">
+            <h1>10%</h1>
+            <button>start saving</button>
+        </div>
+    </section>
+    <section class="sec5">
+        <div class="flex">
+            <div class="airtime">
+                <h2>Airtime and data Top-Up</h2>
+                <p>Stay connected with ease as you top up your airtime anytime, anywhere with our banking app</p>
+                <button class="btn2" style="margin-left: 28%;">Explore top-up</button>
+            </div>
+            <div class="airpic"><img src="airtime.jfif" alt=""></div>
+        </div>
+
+    </section>
+    <section class="sec6">
+        <div class="secure">
+            <h2>Security that never sleeps</h2>
+            <p>Protected by a 2,500-strong, 24/7 dedicated team,All transactions are recorded and carefully detailed for
+                you to be able to track your spendings</p>
+            <div class="securepic"><img src="secure.jfif" alt=""></div>
+            <button class="but1" style="margin-left: 43%;">Explore security</button>
+            <h2>Join the 40+ million using Express</h2>
+            <button class="but1" style="margin-left: 45%;">Get Express</button>
+        </div>
+        <br>
+        <br>
+    </section>
+    <footer class="end">
+        <br>
+        <br>
+        <h4>What are you waiting for?</h4>
+        <br>
+        <h2>Take your money on a whole new level</h2>
+        <button class="btn2" style="margin-left: 10%;">Learn more</button>
+        <section class="secg">
+            <div class="footer">
+                <h3>Personal</h3>
+                <li><a href="#">Sign Up</a></li>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Press</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Developers</a></li>
+            </div>
+            <div class="footer">
+                <h3>Business</h3>
+                <li><a href="#">Learning</a></li>
+                <li><a href="#">Jobs</a></li>
+                <li><a href="#">Salary</a></li>
+                <li><a href="#">Mobile</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Top Companies Hub</a></li>
+            </div>
+            <div class="footer">
+                <h3>Explore<18</h3>
+                <li><a href="#">Talent</a></li>
+                <li><a href="#">Marketing</a></li>
+                <li><a href="#">Sales</a></li>
+                <li><a href="#">Learning</a></li>
+            </div>
+            <div class="footer">
+                <h3>Company</h3>
+                <li><a href="#">Members</a></li>
+                <li><a href="#">Jobs</a></li>
+                <li><a href="#">Companies</a></li>
+                <li><a href="#">Featured</a></li>
+                <li><a href="#">Learning</a></li>
+                <li><a href="#">Posts</a></li>
+                <li><a href="#">Articles</a></li>
+                <li><a href="#">Schools</a></li>
+                <li><a href="#">News</a></li>
+                <li><a href="#">News Letters</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Advice</a></li>
+                <li><a href="#">People Search</a></li>
+                <br>
+                <img src="logo_full-removebg-preview (1).png" alt="">
+                <p>2024 Explore. All rights reserved</p>
+            </div>
+        </section>
+
+    </footer>
+</body>
+
+</html>
+<script>
+    let opaq = document.getElementById("opaq")
+    function color() {
+        opaq.style.backgroundColor = " rgba(0, 0, 0,0.2)"
+    }
+    function log() {
+window.location.href="loadout.html"
+    }
+</script>

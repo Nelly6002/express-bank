@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: #f7f7f7;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+
+    }
+
+    form {
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 350px;
+        width: 100%;
+    }
+
+    input {
+        background-color: #edeff2;
+        border: none;
+        border-radius: 5px;
+        width: 300px;
+        height: 40px;
+    }
+
+    button {
+        align-items: center;
+        text-align: center;
+        width: 150px;
+        padding: 15px;
+        height: fit-content;
+        border: none;
+        background-color: transparent;
+        border-radius: 10px;
+        background-color: white;
+        color: black;
+        cursor: pointer;
+        font-size: large;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin-left: 30%;
+    }
+
+    button:hover {
+        background-color: #f4f4f4;
+
+    }
+
+    .img img {
+        margin-top: 100px;
+        width: 100px;
+        height: 100px;
+        margin-left: 35%;
+    }
+
+    .form h2 {
+        margin-left: 10%;
+        font-size: 40px;
+    }
+
+    .form p {
+        color: #8D969E;
+    }
+
+    .lab {
+        margin-left: 5%;
+    }
+
+    .form p {
+        text-align: center;
+    }
+
+    .form p:hover {
+        cursor: pointer;
+        color: #191c1f;
+        text-decoration: underline;
+    }
+</style>
+
+<body>
+    <div class="form">
+        <form id="signup-form">
+            <div class="form">
+                <div class="img"><img src="-removebg-preview (1).png" alt=""></div>
+                <h2>Create account</h2>
+                <p>Create an account with Express to get started</p>
+                <div class="lab">
+                    <label for="firstname">Firstname</label>
+                    <br>
+                    <input type="text" id="firstname" name="firstname" required>
+                </div>
+                <div class="lab">
+                    <label for="lastname">Lastname</label>
+                    <br>
+                    <input type="text" id="lastname" name="lastname" required>
+                </div>
+                <div class="lab">
+                    <label for="email">Email</label>
+                    <br>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="lab">
+                    <label for="username">Username</label>
+                    <br>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="lab">
+                    <label for="password">Password</label>
+                    <br>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="lab">
+                    <label for="confirm-password">Confirm Password</label>
+                    <br>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
+                <br>
+                <button type="submit">Sign Up</button>
+                <p onclick="login()">Already have an account? log in</p>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById('signup-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        let firstname = document.getElementById('firstname').value
+        let lastname = document.getElementById('lastname').value
+        let email = document.getElementById('email').value;
+        let username = document.getElementById('username').value;
+        let password = document.getElementById('password').value;
+        let confirmPassword = document.getElementById('confirm-password').value;
+
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        // Sign up with email and password
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // User signed up successfully
+                var user = userCredential.user;
+                console.log(user);
+
+                // Set username in Firestore
+                db.collection("users").doc(user.uid).set({
+                    username: username,
+                    firstname:firstname,
+                    lastname:lastname
+                })
+                    .then(() => {
+                        console.log("Username added to database");
+                        alert("Sign up successful!");
+                        // Redirect to login page after successful registration
+                        window.location.href = "personalinfo.html";
+                    })
+                    .catch((error) => {
+                        console.error("Error adding username to database: ", error);
+                        alert("Error adding username to database: " + error.message);
+                    });
+            })
+            .catch((error) => {
+                // Handle sign-up errors
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                alert("Sign up failed: " + errorMessage);
+                console.error("Sign up error: ", error);
+            });
+    });
+
+    function login() {
+        window.location.href = "login1.html";
+    }
+</script>

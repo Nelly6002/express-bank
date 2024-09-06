@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <title>Transfer Money</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: rgb(247, 247, 247);
+    }
+
+    .geust {
+      margin-left: 15%;
+    }
+
+    .geust img {
+      border-radius: 100%;
+      margin-left: 15%;
+      margin-top: 15%;
+      width: 80px;
+      height: 80px;
+    }
+
+    .geust p {
+      color: #191c1f;
+      font-size: larger;
+    }
+
+    .box {
+      align-items: center;
+      position: relative;
+    }
+
+    .box p {
+      margin: 10px;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .box:hover .list {
+      display: block;
+    }
+
+    .drop {
+      display: flex;
+      width: fit-content;
+    }
+
+    .list {
+      justify-content: space-around;
+      z-index: 1;
+      width: fit-content;
+      height: fit-content;
+      display: none;
+      position: absolute;
+      background-color: #f7f7f7;
+      box-shadow: 0 5px 30px 0 #c9c9c9;
+    }
+
+    .list li {
+      margin-left: 20px;
+      cursor: pointer;
+      text-align: left;
+      list-style-type: none;
+      margin: 10px;
+      font-size: 15px;
+      display: flex;
+      justify-content: start;
+      font-family: sans-serif;
+      width: fit-content;
+    }
+
+    .item {
+      margin-left: 15%;
+      margin-top: 15%;
+      height: fit-content;
+    }
+
+    .item p {
+      display: flex;
+      margin-top: 0px;
+    }
+
+    .select {
+      border-left: solid 3px #191c1f;
+      padding: 3px;
+    }
+
+    .p {
+      color: #191c1f;
+    }
+
+    .main {
+      justify-content: center;
+      display: flex;
+      width: 100%;
+
+    }
+
+
+
+    input[type="text"],
+    input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      height: 40px;
+      margin-top: 10px;
+      outline: none;
+      border: none;
+      font-family: sans-serif;
+      border-radius: 20px;
+      background-color: rgb(235, 235, 240);
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      width: 350px;
+      justify-content: center;
+      border-radius: 5px;
+      border-radius: 20px;
+    }
+
+    .button-container {
+      position: fixed;
+      bottom: 20px;
+      /* Adjust as needed */
+      left: 0;
+      width: 100%;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      background-color: transparent;
+      /* Optional: semi-transparent background */
+      padding: 10px;
+
+    }
+
+
+    button:hover {
+      background-color: #0056b3;
+      transition: background-color 0.3s;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1)
+    }
+
+
+    .hidden {
+      display: none;
+    }
+
+    .section {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .visible {
+      opacity: 1;
+    }
+
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 20px auto;
+    }
+
+    .pin-input {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ddd;
+      margin: 10px;
+      text-align: center;
+      font-size: 20px;
+    }
+
+    .receipt-details {
+      margin-top: 20px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .receipt-details span {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    #confirmAmount {
+      font-size: 35px !important;
+      /* Force the font size to be larger */
+      font-weight: 800;
+      /* Keep the boldness */
+      text-align: center;
+      /* Center the text */
+      margin-bottom: 5px;
+    }
+
+    .checkmark {
+      font-size: 60px;
+      color: rgb(185, 194, 208);
+    }
+
+    .arrow {
+      align-items: center;
+      justify-content: center;
+
+    }
+
+    .arrow span {
+      cursor: pointer;
+    }
+
+    .arrow p {
+      font-size: x-large;
+      color: rgb(98, 98, 98)
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="main">
+    <div>
+      <div class="arrow">
+        <span onclick="arrow()" class="material-symbols-outlined">
+          arrow_back
+        </span>
+        <h2 style="line-height: 0px; color: #2c2c2cfa; font-family: sans-serif;">Transfer to Express Account</h2>
+        <span style=" color:rgb(98, 98, 98);">Transfer to other people with the same express app</span>
+        <p id="Checkbal">wallet:</p>
+      </div>
+      <!-- Step 1: Enter Account Number -->
+      <div id="step1" class="section visible">
+        <input id="accountNumber" type="text" placeholder="Enter Account Number">
+        <div class="button-container">
+          <button onclick="checkAccount()">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Show Profile Picture, Name, and Amount -->
+      <div id="step2" class="section hidden">
+        <img id="profilePic" class="profile-img" src="default-profile.png" alt="Profile Picture">
+        <h2 id="fullName">Recipient Name</h2>
+        <p id="recipientAccountNumber">Account Number</p>
+        <input id="amount" type="text" placeholder="Enter Amount">
+        <input id="description" type="text" placeholder="Enter Description (optional)">
+        <div class="button-container">
+          <button onclick="goToConfirmation()">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Show Confirmation Details -->
+      <div id="step3" class="section hidden">
+        <h3>Confirm Transfer Details</h3>
+        <div class="receipt-details">
+          <span id="confirmAmount" class="span"></span>
+        </div>
+        <div class="receipt-details">
+          <span id="confirmName">Name:</span>
+          <span id="confirmAccountNumber">Account Number:</span>
+          <span id="confirmDescription">Description:</span>
+        </div>
+        <div class="button-container">
+          <button onclick="goToPin()">Confirm</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Enter PIN -->
+      <div id="step4" class="section hidden">
+        <h3>Enter PIN</h3>
+        <div id="pinContainer">
+          <div class="pin-input"></div>
+          <div class="pin-input"></div>
+          <div class="pin-input"></div>
+          <div class="pin-input"></div>
+        </div>
+        <input id="pin" type="password" maxlength="4" oninput="handlePinInput(event)">
+      </div>
+
+      <!-- Step 5: Success Checkmark -->
+      <div id="step5" class="section hidden">
+        <div class="checkmark">✓</div>
+        <p>Transaction Successful!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let recipientData = {};
+    // Fetch user's balance from Firestore
+    function fetchUserBalance() {
+      const user = firebase.auth().currentUser;
+
+      if (!user) {
+        document.getElementById("Checkbal").textContent = "Not logged in";
+        return;
+      }
+
+      const userDocRef = db.collection("users").doc(user.uid);
+
+      userDocRef.get().then((doc) => {
+        if (doc.exists) {
+          const userData = doc.data();
+          const userBalance = userData.amount;
+
+          // Display the user's balance in the #Checkbal element
+          document.getElementById("Checkbal").textContent = `Wallet: ₦${userBalance}`;
+        } else {
+          console.log("User document not found.");
+        }
+      }).catch((error) => {
+        console.error("Error fetching user balance:", error);
+      });
+    }
+
+    // Call this function when the page loads
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User is logged in, fetch and display their balance
+        fetchUserBalance();
+      }
+    });
+    function checkAccount() {
+    // Show the wallet when starting a new transfer
+    document.getElementById("Checkbal").style.display = "block";
+    
+    const accountNumber = document.getElementById("accountNumber").value.trim();
+    if (!accountNumber) {
+      alert("Please enter a valid account number.");
+      return;
+    }
+
+    const user = firebase.auth().currentUser;
+
+    // Fetch the sender's own account number
+    db.collection("users").doc(user.uid).get().then(senderDoc => {
+        if (senderDoc.exists) {
+            const senderData = senderDoc.data();
+            const senderAccountNumber = senderData.bankAccountNumber;
+
+            // Check if the sender is trying to send money to themselves
+            if (senderAccountNumber === accountNumber) {
+                alert("You cannot send money to yourself.");
+                return;
+            }
+
+            // Proceed to check if the recipient's account exists
+            db.collection("users").where("bankAccountNumber", "==", accountNumber).get()
+                .then(querySnapshot => {
+                    if (!querySnapshot.empty) {
+                        const receiverDoc = querySnapshot.docs[0];
+                        recipientData = receiverDoc.data();
+
+                        // Show recipient profile and name
+                        document.getElementById("fullName").textContent = recipientData.firstname + " " + recipientData.lastname;
+                        document.getElementById("recipientAccountNumber").textContent = accountNumber;
+
+                        // Show profile picture if it exists, otherwise use default
+                        document.getElementById("profilePic").src = recipientData.profilePicture || 'guest-icon-png-29.jpg';
+
+                        transitionToStep('step2');
+                    } else {
+                        alert("Account number not found.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error finding recipient:", error);
+                });
+        } else {
+            console.error("Sender account not found.");
+        }
+    }).catch(error => {
+        console.error("Error fetching sender account:", error);
+    });
+}
+
+
+  function goToConfirmation() {
+    document.getElementById("confirmName").textContent = "Name: " + recipientData.firstname + " " + recipientData.lastname;
+    document.getElementById("confirmAccountNumber").textContent = "Account Number: " + document.getElementById("recipientAccountNumber").textContent;
+    document.getElementById("confirmAmount").textContent = " ₦" + document.getElementById("amount").value;
+    document.getElementById("confirmDescription").textContent = "Description: " + document.getElementById("description").value;
+
+
+    transitionToStep('step3');
+  }
+    function goToPin() {
+      
+    // Hide the wallet once you reach the confirmation step
+    document.getElementById("Checkbal").style.display = "none";
+      transitionToStep('step4');
+    }
+
+    function handlePinInput(event) {
+      const pin = event.target.value;
+      const pinCircles = document.querySelectorAll('.pin-input');
+      for (let i = 0; i < pinCircles.length; i++) {
+        pinCircles[i].textContent = pin[i] || '';
+      }
+      if (pin.length === 4) {
+        processTransaction(pin);
+      }
+    }
+
+    function processTransaction(enteredPin) {
+      const user = firebase.auth().currentUser;
+
+      if (!user) {
+        alert("User not authenticated.");
+        return;
+      }
+
+      // Fetch the stored PIN from Firestore
+      db.collection("users").doc(user.uid).get()
+        .then(doc => {
+          if (doc.exists) {
+            const storedPin = doc.data().pin;
+
+            // Compare the entered PIN with the stored PIN
+            if (enteredPin === storedPin) {
+              const amount = parseFloat(document.getElementById("amount").value);
+              const description = document.getElementById("description").value;
+              const recipientAccountNumber = document.getElementById("recipientAccountNumber").textContent;
+
+              // Start a Firestore batch transaction
+              const batch = db.batch();
+
+              // Fetch the sender's document
+              const senderRef = db.collection("users").doc(user.uid);
+              return senderRef.get().then(senderDoc => {
+                if (senderDoc.exists) {
+                  const senderData = senderDoc.data();
+                  const newSenderBalance = senderData.amount - amount;
+
+                  if (newSenderBalance < 0) {
+                    alert("Insufficient balance.");
+                    return;
+                  }
+
+                  // Update the sender's balance
+                  batch.update(senderRef, { amount: newSenderBalance });
+
+                  // Fetch the recipient's document
+                  return db.collection("users").where("bankAccountNumber", "==", recipientAccountNumber).get().then(querySnapshot => {
+                    if (!querySnapshot.empty) {
+                      const recipientDoc = querySnapshot.docs[0];
+                      const recipientData = recipientDoc.data();
+                      const newRecipientBalance = recipientData.amount + amount;
+
+                      // Update the recipient's balance
+                      batch.update(recipientDoc.ref, { amount: newRecipientBalance });
+
+                      // Add transaction to sender's document
+                      const transaction = {
+                        type:"Transfer",
+                        amount: amount,
+                        description: description,
+                        recipientAccountNumber: recipientAccountNumber,
+                        timestamp: new Date()
+                      };
+                      batch.update(senderRef, {
+                        transactions: firebase.firestore.FieldValue.arrayUnion(transaction)
+                      });
+
+                      // Commit the batch
+                      return batch.commit().then(() => {
+                        // Display success message
+                        transitionToStep('step5');
+                      }).catch(error => {
+                        console.error("Error committing batch:", error);
+                      });
+                    } else {
+                      alert("Recipient account number not found.");
+                    }
+                  }).catch(error => {
+                    console.error("Error fetching recipient data:", error);
+                  });
+                } else {
+                  alert("Sender document not found.");
+                }
+              }).catch(error => {
+                console.error("Error fetching sender data:", error);
+              });
+            } else {
+              alert("Incorrect PIN.");
+            }
+          } else {
+            alert("User document not found.");
+          }
+        }).catch(error => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+
+
+
+
+    function transitionToStep(stepId) {
+    document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+    document.getElementById(stepId).classList.remove('hidden');
+    document.getElementById(stepId).classList.add('visible');
+
+    // Check if it's the confirmation or PIN step, hide the wallet
+    if (stepId === 'step4' || stepId === 'step5') {
+      document.getElementById("Checkbal").style.display = "none";
+    } else {
+      // Show the wallet on other steps
+      document.getElementById("Checkbal").style.display = "block";
+    }
+  }
+  function arrow() {
+    window.location.href="dashboard.html";
+  }
+    // Logout function
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login1.html";
+      }).catch((error) => {
+        console.error("Error signing out:", error);
+      });
+    }
+  </script>
+</body>
+
+</html>

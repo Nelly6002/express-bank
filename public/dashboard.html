@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <title>Dashboard</title>
+  <style>
+   * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Open Sans', sans-serif;
+      background-color: rgb(247, 247, 247);
+      display: flex;
+      height: 100vh;
+      color: #4f5b62;
+    }
+
+    .side {
+      width: 280px;
+      height: 100%;
+      background-color: rgb(247, 247, 247);
+      color: #3a3a3a; /* Light text color */
+    }
+
+    .geust {
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    .geust img {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+    }
+
+    .geust p {
+      margin-top: 10px;
+      font-size: 1.2rem;
+      font-weight: 500;
+     
+    }
+
+    .box {
+      position: relative;
+      margin-top: 20px;
+    }
+
+    .drop {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .material-symbols-outlined {
+      vertical-align: middle;
+    }
+
+    .list {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white; /* Slightly lighter gray */
+      padding: 10px;
+      width: 160px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 10;
+    }
+
+    .box:hover .list {
+      display: block;
+    }
+
+    .list li {
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #3a3a3a; /* Light text color */
+      display: flex;
+      align-items: center;
+    }
+
+    .list li:hover {
+      background-color: #d6d6d675;
+      transition: 1s;
+      border-radius: 10px;
+    }
+
+    .list li span {
+      margin-right: 10px;
+    }
+
+    .item {
+      padding: 20px;
+      color:#2c2c2ca8;
+    }
+
+    .item p {
+     margin-left: 10px;
+     line-height: 35px;
+      cursor: pointer;
+    }
+.item span{
+  padding-right: 5px;
+}
+    .select {
+      color: rgb(79,120,242);
+     background-color: #ffff;
+     padding: 8px;
+     width: 200px;
+     border-radius: 10px;
+    }
+    .select:hover{
+      background-color: #d6d6d675;
+    }
+.notselect:hover{
+  background-color: #d6d6d675;
+     padding: 8px;
+     width: 200px;
+     border-radius: 10px;
+}
+    .main {
+      flex: 1;
+      overflow: scroll;
+      background-color: #f9f9f9; /* Light background for content area */
+    }
+
+    .trans {
+      position: relative;
+    }
+
+    .transfer-option {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #ffff; /* Light background for options */
+      border-radius: 20px;
+      transition: background-color 0.2s, transform 0.2s;
+      cursor: pointer;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .transfer-option img{
+      width: 40px;
+      height: 40px;
+    }
+    .transfer-option:hover{
+      background-color: #d6d6d675;
+    }
+.intro{
+  display: flex;
+  justify-content: center;
+
+}
+    .transfer-options span {
+      font-size: xx-large;
+    }
+
+    .transfer-options {
+      position: fixed; /* Centering adjustments */
+      flex-wrap: wrap;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color:  rgb(247, 247, 247);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      gap: 20px;
+      z-index: 3;
+     padding: 20px;
+      overflow-y: auto;
+    }
+
+    .translucent-background {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 2;
+    }
+
+    .close-btn {
+      cursor: pointer;
+      font-size: 1.2rem;
+      align-self: flex-end;
+    }
+    /* .balance {
+     
+      } */
+
+    .balance p {
+      font-size: 1.5rem;
+      color: #2c2c2ca8; /* Darker text color */
+    }
+
+    .balance h1 {
+      font-size: 3rem;
+      color: #2c2c2ca8; /* Darker text color */
+      margin: 20px 0;
+    }
+
+    .add {
+      display: inline-flex;
+      align-items: center;
+      background-color:rgb(210,227,252); /* Dark gray for button */
+      color: rgb(79, 120, 242); /* Light text color */
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.2s;
+    }
+.img{
+ background-color: #fff;
+ width: 700px;
+ padding: 30px 50px;
+border-radius: 20px;
+}
+    .add:hover {
+      background-color: #d6d6d675; /* Slightly lighter dark gray */
+    }
+
+    .section {
+      display: flex;
+      width: fit-content;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .section span{
+      margin-left: 30px;
+     padding:5px;
+     color: #2c2c2ca8;
+     text-align: center;
+     width:fit-content;
+     border-radius: 10px;
+    }
+.section span:hover{
+  background-color: #d6d6d675;
+}
+    .p2 {
+     background-color: #ffff;
+     padding: 5px;
+     text-align: center;
+     color: black;
+     width:fit-content;
+     border-radius: 10px;
+    }
+
+    .topoption {
+      padding: 10px 30px;
+      background-color: #ffff;
+    display: block;   
+    justify-content: center;
+    height: fit-content;
+    align-items: center;
+      margin-top: 20px;
+      border-radius: 20px;
+      width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    
+
+    .topoption div:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: scale(1.05);
+    }
+
+    .option {
+      justify-content: center;
+     padding: 20px;
+    }
+
+   .space {
+      display: flex;
+     
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      font-size: 1rem;
+    }
+
+    .option .space:hover {
+      transition: all 1s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: scale(1.05);
+      background-color: #d6d6d675;
+    }
+
+    .option h4 {
+      font-size: rem;
+      margin-left: 15px;
+    }
+
+    .space img {
+      width: 25px;
+      height: 25px;
+    }
+    .circle{
+      border-radius: 100%;
+      padding: 5px;
+    }
+/* General Styles */
+@media (max-width:960px) {
+  .img{
+ background-color: #fff;
+ width: 100%;
+ padding: 30px 50px;
+border-radius: 20px;
+}
+.option{
+  width: 100%;
+}
+.topoption{
+  width: 100%;
+}
+}
+@media (max-width: 768px) {
+ 
+  .side {
+  position: fixed;
+  top: 0;
+  left: -280px; /* Hidden by default */
+  width: 280px;
+  height: 100%;
+  transition: transform 1s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); 
+  z-index: 4;
+}
+
+.side.active {
+  transform: translateX(280px); /* Slide-in when active */
+}
+
+.hamburger-icon {
+  display: block;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 5;
+  cursor: pointer;
+  font-size: 2rem;
+  color: #2c2c2c;
+}
+
+.close-icon {
+  display: none;
+}
+
+
+
+.translucent-background.show {
+  display: block;
+  opacity: 1; /* Fade-in effect */
+}
+
+}
+    @media (min-width: 769px) {
+  .hamburger-icon {
+    display: none; /* Hide on larger screens */
+  }
+}
+
+  </style>
+</head>
+<body>
+   <!-- Translucent background -->
+   <div id="translucentBackground" class="translucent-background"></div>
+  <div class="side" id="sidebar">
+    <div class="profile">
+      <div class="geust">
+       <div class="intro">
+        <img id="avatar" src="guest-icon-png-29.jpg" alt="guest avatar">
+        <p id="username"></p>
+       </div>
+        <div class="box">
+          <span class="drop">
+            <span>personal<span class="material-symbols-outlined">
+                expand_more
+              </span></span>
+          </span>
+          <div class="list">
+            <ul>
+              <li onclick="profile()"><span class="material-symbols-outlined">
+                  account_box
+                </span>Profile</li>
+               <li> <span class="material-symbols-outlined">
+                notifications
+              </span>Notifications</li>
+                <li><span onclick="edit()" class="material-symbols-outlined">
+                  settings
+                </span>settings</li>
+                <li>                <span class="material-symbols-outlined">
+                  more_horiz
+                </span>More</li>
+              <li onclick="logout()"><span style="color: red;" class="material-symbols-outlined">
+                  logout
+                </span><span style="color: red;"> Log out</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <div onclick="home()" class="select">
+        <p class="p"><span class="material-symbols-outlined">
+            payments
+          </span>Home</p>
+      </div>
+     <div onclick="card()" class="notselect">
+      <p><span class="material-symbols-outlined">
+        credit_card
+      </span>Card</p>
+     </div>
+   <div onclick="savings()" class="notselect">
+    <p><span class="material-symbols-outlined">
+      savings
+    </span>Savings</p>
+   </div>
+    </div>
+  </div>
+
+  <!-- Hamburger icon for mobile view -->
+  <div id="hamburgerIcon" class="hamburger-icon">
+    <span id="hamburgerIconSymbol" class="material-symbols-outlined">menu</span>
+    <span id="closeIconSymbol" class="material-symbols-outlined close-icon">close</span>
+  </div>
+
+  <div class="main">
+    <!-- Main content remains the same -->
+    <div class="trans">
+      <!-- Existing content -->
+
+      <!-- New Transfer Options Section -->
+      <div id="transferOptions" class="transfer-options">
+        <div class="close-btn" onclick="closeTransferOptions()"><span class="material-symbols-outlined">
+            close
+          </span></div>
+        <div class="transfer-option" onclick="expressTransfer()">
+          <img src="logo-removebg-preview.png" alt="">
+          <p>Transfer to Express Account</p>
+        </div>
+        <div class="transfer-option" onclick="otherBankTransfer()">
+          <span class="material-symbols-outlined">
+            account_balance
+          </span>
+          <p>Transfer to Other Bank Account</p>
+        </div>
+        <div class="transfer-option" onclick="tosavings()">
+          <span class="material-symbols-outlined">
+            savings
+          </span>
+          <p>Transfer to Savings</p>
+        </div>
+      </div>
+
+    </div>
+
+   
+    <h1 style="padding: 20px 50px;">Home</h1>
+    <div class="section">
+      <span class="p2">Account</span>
+      <span onclick="transaction()">Transaction</span>
+    </div>
+   <div style="display: flex; justify-content: center ;padding:20px ;" class="center">
+    <div class="img">
+      <div class="balance">
+        <p>Your balance</p>
+        <h1></h1>
+        <div onclick="add()" class="add">
+          <span class="material-symbols-outlined">
+            add
+          </span>Add money
+        </div>
+      </div>
+     </div>
+   </div>
+    <div class="option">
+      <h3 style="padding-left: 180px;">Services</h3>
+      <div class="topoption">
+        <div onclick="transfer()" class="space">
+         <div style="background-color: rgb(210, 227, 252);" class="circle">
+          <span style="color: rgb(79, 120, 242);" class="material-symbols-outlined">
+            cached
+          </span>
+         </div>
+          <h4>Transfer</h4>
+        </div>
+        
+        <div onclick="airtime()" class="space"><div style="background-color: lightgreen" class="circle"><span style="color: green;" class="material-symbols-outlined">
+          smartphone
+        </span></div>
+          <h4>Airtime</h4>
+        </div>
+        <div class="space">
+          <div style="background-color: lightgoldenrodyellow;" class="circle"><span style="color: orange;" class="material-symbols-outlined">
+            wifi
+          </span></div>
+          
+          <h4>Internet Service</h4>
+        </div>
+        <div class="space"><div style="background-color: rgb(243, 215, 243);" class="circle">
+          <span style="color: purple;" class="material-symbols-outlined">
+            paid
+          </span>
+        </div>
+          <h4>Betting</h4>
+        </div>
+        <div class="space">
+         <div style="background-color: #d6d6d675;" class="circle">
+          <img src="images-removebg-preview.png" alt="">
+         </div>
+          <h4>Loan</h4>
+        </div>
+        <div class="space">
+         <div style="background-color: rgb(236, 195, 195);" class="circle">
+          <span style="color: red;" class="material-symbols-outlined">
+            tv
+          </span>
+         </div>
+          <h4>TV</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        const userDocRef = db.collection("users").doc(user.uid);
+
+        userDocRef.get().then((doc) => {
+          if (doc.exists) {
+            const userData = doc.data();
+            document.getElementById("avatar").src = userData.avatarURL || "guest-icon-png-29.jpg";
+            document.getElementById("username").innerText = "Welcome, " + userData.username + "!";
+
+            // Check if the user has an 'amount' set, if not, set it to 20,000 Naira
+            if (!userData.amount) {
+              userDocRef.update({ amount: 20000 })
+                .then(() => {
+                  document.querySelector('.balance h1').innerText = '₦20,000';
+                })
+                .catch((error) => {
+                  console.error("Error updating balance: ", error);
+                });
+            } else {
+              document.querySelector('.balance h1').innerText = '₦' + userData.amount.toLocaleString();
+            }
+          } else {
+            console.error("No such document!");
+          }
+        }).catch((error) => {
+          console.error("Error getting document:", error);
+        });
+      } else {
+        window.location.href = "index.html"; // Redirect to login page if not authenticated
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+  // Hide the elements initially
+  document.getElementById("transferOptions").style.display = "none";
+
+});
+
+// Transfer function
+function transfer() {
+  document.getElementById("transferOptions").style.display = "block";
+  document.getElementById("translucentBackground").style.display = "block";
+}
+
+function closeTransferOptions() {
+  document.getElementById("transferOptions").style.display = "none";
+  document.getElementById("translucentBackground").style.display = "none";
+}
+
+function expressTransfer() {
+  closeTransferOptions();
+  window.location.href = "expressbank.html";
+}
+
+function otherBankTransfer() {
+  closeTransferOptions();
+  alert("Other Bank Transfer selected.");
+}
+
+function tosavings() {
+  closeTransferOptions();
+  alert("Transfer to Savings selected.");
+}
+
+function add() {
+  alert("Add money function will be implemented here.");
+}
+
+function edit() {
+  window.location.href = "edit.html";
+}
+
+function airtime() {
+  window.location.href = "airtime.html";
+}
+function profile(){
+  window.location.href = "profile.html";
+}
+function transaction(){
+  window.location.href = "transaction.html";
+}
+
+function logout() {
+  firebase.auth().signOut().then(() => {
+    window.location.href = "login1.html";
+  }).catch((error) => {
+    console.error("Error signing out:", error);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Hamburger icon click handler
+  const sidebar = document.getElementById("sidebar");
+  const translucentBackground = document.getElementById("translucentBackground");
+  const hamburgerIcon = document.getElementById("hamburgerIcon");
+  const closeIconSymbol = document.getElementById("closeIconSymbol");
+  const hamburgerIconSymbol = document.getElementById("hamburgerIconSymbol");
+
+  // Initially, close icon should be hidden
+  closeIconSymbol.style.display = "none";
+
+  hamburgerIcon.addEventListener("click", function () {
+    if (sidebar.classList.contains("active")) {
+      // Hide the sidebar and background
+      sidebar.classList.remove("active");
+      translucentBackground.classList.remove("show");
+      closeIconSymbol.style.display = "none"; // Hide close icon
+      hamburgerIconSymbol.style.display = "inline"; // Show hamburger icon
+    } else {
+      // Show the sidebar and background
+      sidebar.classList.add("active");
+      translucentBackground.classList.add("show");
+      closeIconSymbol.style.display = "inline"; // Show close icon
+      hamburgerIconSymbol.style.display = "none"; // Hide hamburger icon
+    }
+  });
+
+  // Close the menu and background when the translucent background is clicked
+  translucentBackground.addEventListener("click", function () {
+    sidebar.classList.remove("active");
+    translucentBackground.classList.remove("show");
+    closeIconSymbol.style.display = "none"; // Hide close icon
+    hamburgerIconSymbol.style.display = "inline"; // Show hamburger icon
+  });
+});
+function home() {
+  window.location.href = "dashboard.html";
+}
+function card() {
+  window.location.href="card.html"
+}
+function savings() {
+  window.location.href="savings.html"
+}
+  </script>
+</body>

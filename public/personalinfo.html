@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: #f7f7f7;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    form {
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 350px;
+        width: 100%;
+    }
+
+    .lab input {
+        background-color: #edeff2;
+        border: none;
+        border-radius: 5px;
+        width: 400px;
+        align-items: center;
+        text-align: center;
+        height: 40px;
+    }
+
+    .flex select {
+        background-color: #edeff2;
+        border: none;
+        border-radius: 5px;
+        width: 180px;
+        align-items: center;
+        text-align: center;
+        height: 40px;
+    }
+
+    .lab1 input {
+        background-color: #edeff2;
+        border: none;
+        border-radius: 5px;
+        width: 180px;
+        align-items: center;
+        margin-left: 10px;
+        text-align: center;
+        height: 40px;
+    }
+
+    .lab1 label {
+        margin-left: 30px;
+    }
+
+    button {
+        align-items: center;
+        text-align: center;
+        width: 150px;
+        padding: 15px;
+        height: fit-content;
+        border: none;
+        background-color: transparent;
+        border-radius: 10px;
+        background-color: white;
+        color: black;
+        cursor: pointer;
+        font-size: large;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin-left: 30%;
+    }
+
+    button:hover {
+        background-color: #f4f4f4;
+
+    }
+
+    .img img {
+        width: 100px;
+        height: 100px;
+        margin-left: 35%;
+    }
+
+    .form p {
+        text-align: center;
+        color: #8D969E;
+    }
+
+    .form h3 {
+        text-align: center;
+        font-size: 25px;
+        font-weight: 400;
+        color: #8D969E;
+    }
+
+    .form p:hover {
+        cursor: pointer;
+        color: #191c1f;
+        text-decoration: underline;
+    }
+
+    .flex {
+        display: flex;
+        margin-left: 5%;
+        justify-content: space-between;
+    }
+</style>
+
+<body>
+    <div class="form">
+        <form id="signup-form">
+            <div class="form">
+                <div class="img"><img src="-removebg-preview (1).png" alt=""></div>
+                <h3>Please fill in empty field for more information about you.</h3>
+                <div class="lab">
+                    <label for="date of birth">Date Of Birth</label>
+                    <br>
+                    <input type="date" id="dateofbirth" name="dateofbirth" required>
+                </div>
+                <div class="flex">
+
+                    <div class="lab1">
+                        <label for="Gender">Gender</label>
+                        <br>
+                        <input type="text" id="gender" name="gender" required>
+                    </div>
+
+                    <div class="lab1">
+                        <label for="Phone number">Phone number</label>
+                        <br>
+                        <input type="number" id="phonenumber" name="phonenumber" required>
+                    </div>
+                </div>
+
+                <div class="lab">
+                    <label for="address">Address</label>
+                    <br>
+                    <input type="text" id="address" name="address" required">
+                </div>
+
+                <br>
+                <button type="submit">Next</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById('signup-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    let dateofbirth = document.getElementById('dateofbirth').value;
+    let gender = document.getElementById('gender').value;
+    let phonenumber = document.getElementById('phonenumber').value;
+    let address = document.getElementById('address').value;
+
+    let user = firebase.auth().currentUser;
+    if (user) {
+        // Use update() instead of set()
+        db.collection("users").doc(user.uid).update({
+            dateofbirth: dateofbirth,
+            gender: gender,
+            phonenumber: phonenumber,
+            address: address
+        })
+        .then(() => {
+            console.log("Information added to database");
+            alert("Information successfully saved!");
+            // Redirect to the next page after successful registration
+            window.location.href = "generate.html";
+        })
+        .catch((error) => {
+            console.error("Error adding information to database: ", error);
+            alert("Error adding information to database: " + error.message);
+        });
+    } else {
+        console.error("No user is signed in.");
+        alert("No user is signed in.");
+    }
+});
+
+</script>

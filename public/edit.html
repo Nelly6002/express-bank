@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+    <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        a {
+            display: block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        main, .username-section {
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-width: 200px;
+            max-height: 200px;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            margin-top: 10px;
+            padding: 8px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: block;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <a href="dashboard.html"> <span onclick="arrow()" class="material-symbols-outlined">
+            arrow_back
+        </span></a>
+        <main>
+            <h2>Change your avatar</h2>
+            <input onchange="pickAvatar(event)" type="file" accept="image/*">
+            <img id="avatar" src="" alt="Your Avatar">
+            <button onclick="updateAvatar()">Change</button>
+        </main>
+
+        <div class="username-section">
+            <h2>Change your username</h2>
+            <input id="username" type="text" placeholder="Enter username">
+            <button onclick="updateUsername()">Change</button>
+        </div>
+    </div>
+
+    <script>
+        let file;
+        let user;
+        let avatar = document.getElementById("avatar");
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // Monitor authentication state
+        firebase.auth().onAuthStateChanged((currentUser) => {
+            if (currentUser) {
+                user = currentUser;
+                console.log("User is signed in:", user);
+                if (user.photoURL) {
+                    avatar.src = user.photoURL; // Display current avatar
+                }
+            } else {
+                console.log("No user is signed in.");
+                window.location.href = "login1.html"; // Redirect to login if no user is signed in
+            }
+        });
+
+        function pickAvatar(event) {
+            file = event.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    avatar.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateAvatar() {
+            if (user && file) {
+                const metadata = {
+                    contentType: file.type
+                };
+                const storageRef = storage.ref();
+                const uploadTask = storageRef.child('avatars/' + user.uid + '/' + file.name).put(file, metadata);
+
+                uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    },
+                    (error) => {
+                        console.error("Error uploading file:", error);
+                        alert("Error uploading file: " + error.message);
+                    },
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            db.collection("users").doc(user.uid).update({
+                                avatarURL: downloadURL
+                            }).then(() => {
+                                user.updateProfile({
+                                    photoURL: downloadURL
+                                }).then(() => {
+                                    alert("Avatar updated successfully");
+                                }).catch((error) => {
+                                    console.error("Error updating avatar:", error);
+                                    alert("Failed to update avatar");
+                                });
+                            }).catch((error) => {
+                                console.error("Error updating avatar URL in Firestore:", error);
+                                alert("Failed to update avatar URL in Firestore");
+                            });
+                        }).catch((error) => {
+                            console.error("Error getting download URL:", error);
+                            alert("Failed to get download URL");
+                        });
+                    }
+                );
+            } else {
+                console.error("No user is signed in or no file selected");
+                alert("No user is signed in or no file selected");
+            }
+        }
+
+        function updateUsername() {
+            user = firebase.auth().currentUser;
+            const newUsername = document.getElementById("username").value;
+
+            if (user) {
+                user.updateProfile({
+                    displayName: newUsername,
+                }).then(() => {
+                    db.collection("users").doc(user.uid).update({
+                        username: newUsername
+                    }).then(() => {
+                        alert("Username updated successfully!");
+                    }).catch((error) => {
+                        console.error("Error updating username in Firestore: ", error);
+                        alert("Failed to update username");
+                    });
+                }).catch((error) => {
+                    console.error("Error updating profile: ", error);
+                    alert("Failed to update profile");
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

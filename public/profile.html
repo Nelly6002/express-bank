@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Profile Page</title>
+    <style>
+     body {
+    font-family: 'Segoe UI', Roboto, 'Open Sans', sans-serif;
+    background-color: rgb(247, 247, 247);
+    color: #4f5b62;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.profile-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.profile-info {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+.profile-field {
+    margin-bottom: 15px;
+}
+
+.profile-field label {
+    font-weight: bold;
+    color: #007bff; /* Use theme color */
+    display: block;
+    margin-bottom: 5px;
+}
+
+.profile-field p {
+    margin: 0;
+    color: #333;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="profile-container">
+        <span onclick="arrow()" class="material-symbols-outlined">
+            arrow_back
+          </span>
+        <header class="profile-header">
+            <img id="profile-avatar" src="guest-icon-png-29.jpg" alt="Profile Avatar" class="profile-avatar">
+            <h1 id="profile-username">Welcome, [Username]!</h1>
+        </header>
+        <div class="profile-info">
+            <div class="profile-field">
+                <label for="profile-firstname">First Name:</label>
+                <p id="profile-firstname">[First Name]</p>
+            </div>
+            <div class="profile-field">
+                <label for="profile-lastname">Last Name:</label>
+                <p id="profile-lastname">[Last Name]</p>
+            </div>
+            <div class="profile-field">
+                <label for="profile-gender">Account Number:</label>
+                <p id="profile-Accountno">[Gender]</p>
+            </div>
+            <div class="profile-field">
+                <label for="profile-dob">Date of Birth:</label>
+                <p id="profile-dob">[Date of Birth]</p>
+            </div>
+            <div class="profile-field">
+                <label for="profile-phone">Phone Number:</label>
+                <p id="profile-phone">[Phone Number]</p>
+            </div>
+            <div class="profile-field">
+                <label for="profile-gender">Gender:</label>
+                <p id="profile-gender">[Gender]</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                const userDocRef = db.collection("users").doc(user.uid);
+
+                userDocRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        document.getElementById("profile-avatar").src = userData.avatarURL || "guest-icon-png-29.jpg";
+                        document.getElementById("profile-username").innerText = "Welcome, " + userData.username + "!";
+                        document.getElementById("profile-firstname").innerText = userData.firstname || "First Name";
+                        document.getElementById("profile-lastname").innerText = userData.lastname || "Last Name";
+                        document.getElementById("profile-Accountno").innerText = userData.bankAccountNumber || "bankAccountNumber";
+                        document.getElementById("profile-dob").innerText = userData.dateofbirth || "Date of Birth";
+                        document.getElementById("profile-phone").innerText = userData.phonenumber || "Phone Number";
+                        document.getElementById("profile-gender").innerText = userData.gender || "Gender";
+                    }
+                }).catch((error) => {
+                    console.error("Error getting document:", error);
+                });
+            } else {
+                window.location.href = "index.html"; // Redirect to login page if not authenticated
+            }
+        });
+        function arrow() {
+    window.location.href="dashboard.html";
+  }
+    </script>
+</body>
+
+</html>

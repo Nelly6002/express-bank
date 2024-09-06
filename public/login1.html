@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: #f7f7f7;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+
+    }
+
+    form {
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 350px;
+        width: 100%;
+    }
+
+    input {
+        background-color:#edeff2;
+        border: none;
+        border-radius: 5px;
+        width: 300px;
+        height: 40px;
+    }
+
+    button {
+        align-items: center;
+        text-align: center;
+        width: 150px;
+        padding: 15px;
+        height: fit-content;
+        border: none;
+        background-color: transparent;
+        border-radius: 10px;
+        background-color: white;
+        color: black;
+        cursor: pointer;
+        font-size: large;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin-left: 30%;
+    }
+
+    button:hover {
+        background-color: #f4f4f4;
+
+    }
+
+    .form img {
+        width: 150px;
+        height: 150px;
+        margin-left: 25%;
+    }
+
+    .form h2 {
+        margin-left: 10%;
+        font-size:30px;
+    }
+
+    .lab {
+        margin-left: 5%;
+    }
+    .form p{
+        color: #8D969E;
+        text-align: center;
+    }
+    .form p:hover{
+        cursor: pointer;
+        color: #191c1f;
+        text-decoration: underline;
+    }
+</style>
+
+<body>
+
+    <form id="signup-form">
+        <div class="form">
+            <img src="logo_full-removebg-preview (1).png" alt="">
+            <h2>Log in to account</h2>
+            <p>Login to your Express account to continue</p>
+            <div class="lab">
+                <label for="email">Email</label>
+                <br>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="lab">
+                <label for="password">Password</label>
+                <br>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <br>
+            <button type="submit">Log in</button>
+            <p onclick="sign()">Don't have an account?Create one</p>
+        </div>
+    </form>
+</body>
+
+</html>
+<script>
+
+const firebaseConfig = {
+    apiKey: "AIzaSyD9SR-lqxz-4TXOffXwNANWDl0zRSyxLbs",
+  authDomain: "bank-app-a1029.firebaseapp.com",
+  projectId: "bank-app-a1029",
+  storageBucket: "bank-app-a1029.appspot.com",
+  messagingSenderId: "163458317563",
+  appId: "1:163458317563:web:24f8762e2fef4db5fec45e"
+  };
+
+    
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    </script>
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let email = document.getElementById('email').value;
+    let password = document.getElementById('password').value;
+
+    // Sign in with email and password
+    firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // User signed in successfully
+            var user = userCredential.user;
+            alert("Login successful!");
+            window.location.href= "dashboard.html"
+            // Redirect to a new page or perform other actions upon successful login
+        })
+        .catch((error) => {
+            // Handle login errors
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            alert(errorMessage);
+            console.log(errorMessage);
+        });
+});
+function sign() {
+    window.location.href= "signup.html"
+}
+    </script>
